@@ -4,6 +4,7 @@ import (
 	"github.com/childoftheuniverse/filesystem"
 
 	"golang.org/x/net/context"
+	"io"
 	"net/url"
 	"os"
 	"path"
@@ -104,6 +105,33 @@ func (f *ContextRespectingIoFile) Write(ctx context.Context, b []byte) (int, err
 		length = <-lench
 		return length, err
 	}
+}
+
+/*
+Tell() determines the current offset inside the file and returns it.
+*/
+func (f *ContextRespectingIoFile) Tell(ctx context.Context) (int64, error) {
+	return f.actualFile.Seek(0, io.SeekCurrent)
+}
+
+/*
+Seek() sets the current position in the file to the absolute offset specified.
+*/
+func (f *ContextRespectingIoFile) Seek(
+	ctx context.Context, offset int64) error {
+	var err error
+	_, err = f.actualFile.Seek(offset, io.SeekStart)
+	return err
+}
+
+/*
+Skip() skips forward by the specified number of bytes without actually reading
+the data.
+*/
+func (f *ContextRespectingIoFile) Skip(ctx context.Context, n int64) error {
+	var err error
+	_, err = f.actualFile.Seek(n, io.SeekCurrent)
+	return err
 }
 
 /*
