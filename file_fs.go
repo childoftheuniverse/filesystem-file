@@ -118,10 +118,8 @@ func (f *ContextRespectingIoFile) Tell(ctx context.Context) (int64, error) {
 Seek() sets the current position in the file to the absolute offset specified.
 */
 func (f *ContextRespectingIoFile) Seek(
-	ctx context.Context, offset int64) error {
-	var err error
-	_, err = f.actualFile.Seek(offset, io.SeekStart)
-	return err
+	ctx context.Context, offset int64, whence int) (int64, error) {
+	return f.actualFile.Seek(offset, io.SeekStart)
 }
 
 /*
